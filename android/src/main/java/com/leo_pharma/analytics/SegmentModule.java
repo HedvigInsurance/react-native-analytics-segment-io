@@ -1,5 +1,6 @@
 package com.leo_pharma.analytics;
 
+import android.app.Activity;
 import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.Promise;
@@ -48,9 +49,23 @@ public class SegmentModule extends ReactContextBaseJavaModule {
         return "SegmentModule";
     }
 
+    public static void setup(Activity activity, @Nullable String key, @Nullable ReadableMap options) {
+        Analytics.Builder analyticsBuilder = new Analytics.Builder(activity.getApplicationContext(), key);
+        setupInner(analyticsBuilder, options);
+    }
+
     @ReactMethod
     public void setup(@Nullable String key, @Nullable ReadableMap options, Promise promise) {
-        Analytics.Builder analyticsBuilder = new Analytics.Builder(getReactApplicationContext(), key);
+        try {
+            Analytics.Builder analyticsBuilder = new Analytics.Builder(getReactApplicationContext(), key);
+            setupInner(analyticsBuilder, options);
+            promise.resolve(true);
+        } catch (IllegalStateException e) {
+            promise.reject("IllegalStateException", "Analytics is already set up, cannot perform setup twice.");
+        }
+    }
+
+    private static void setupInner(Analytics.Builder analyticsBuilder, @Nullable ReadableMap options) {
 
         if (options != null) {
             if (options.hasKey(PROPERTY_FLUSH_AT)) {
@@ -80,13 +95,8 @@ public class SegmentModule extends ReactContextBaseJavaModule {
         }
 
         setupIntegrations(analyticsBuilder);
+        Analytics.setSingletonInstance(analyticsBuilder.build());
 
-        try {
-            Analytics.setSingletonInstance(analyticsBuilder.build());
-            promise.resolve(true);
-        } catch (IllegalStateException e) {
-            promise.reject("IllegalStateException", "Analytics is already set up, cannot perform setup twice.");
-        }
     }
 
     /**
@@ -94,7 +104,7 @@ public class SegmentModule extends ReactContextBaseJavaModule {
      *
      * @param analyticsBuilder
      */
-    private void setupIntegrations(Analytics.Builder analyticsBuilder) {
+    private static void setupIntegrations(Analytics.Builder analyticsBuilder) {
         if (isClassAvailable("com.segment.analytics.android.integrations.adjust.AdjustIntegration")) {
             analyticsBuilder.use(AdjustIntegration.FACTORY);
         }
@@ -174,7 +184,7 @@ public class SegmentModule extends ReactContextBaseJavaModule {
      * @param className Including the full package name
      * @return True if the class is available. False if it cannot be found.
      */
-    private boolean isClassAvailable(String className) {
+    private static boolean isClassAvailable(String className) {
         try {
             Class.forName(className);
             return true;
