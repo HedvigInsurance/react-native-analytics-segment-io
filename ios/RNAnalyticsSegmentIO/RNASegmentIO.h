@@ -15,4 +15,6 @@
 
 @interface RNASegmentIO : NSObject <RCTBridgeModule>
 
++ (void)setupWithKey:(NSString *)key options:(NSDictionary *)options;
+
 @end

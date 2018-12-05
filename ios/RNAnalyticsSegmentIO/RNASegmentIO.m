@@ -42,123 +42,18 @@ RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
 
++ (void)setupWithKey:(NSString *)key options:(NSDictionary *)options {
+    [RNASegmentIO setupInnerWithKey:key options:options];
+}
+
 RCT_EXPORT_METHOD(setup:(NSString *)key
                   options:(NSDictionary *)options
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    SEGAnalyticsConfiguration *config = [SEGAnalyticsConfiguration configurationWithWriteKey:key];
-
-    id value = options[kSEGEnableAdvertisingTrackingKey];
-    if (value != nil) {
-        config.enableAdvertisingTracking = [RCTConvert BOOL:value];
-    }
-
-    value = options[kSEGFlushAtKey];
-    if (value != nil) {
-        config.flushAt = [RCTConvert NSUInteger:value];
-    }
-
-    value = options[kSEGRecordScreenViewsKey];
-    if (value != nil) {
-        config.recordScreenViews = [RCTConvert BOOL:value];
-    }
-
-    value = options[kSEGShouldUseBluetoothKey];
-    if (value != nil) {
-        config.shouldUseBluetooth = [RCTConvert BOOL:value];
-    }
-
-    value = options[kSEGShouldUseLocationServicesKey];
-    if (value != nil) {
-        config.shouldUseLocationServices = [RCTConvert BOOL:value];
-    }
-
-    value = options[kSEGTrackApplicationLifecycleEventsKey];
-    if (value != nil) {
-        config.trackApplicationLifecycleEvents = [RCTConvert BOOL:value];
-    }
-
-    value = options[kSEGTrackAttributionDataKey];
-    if (value != nil) {
-        config.trackAttributionData = [RCTConvert BOOL:value];
-    }
-
-    value = options[kSEGTrackDeepLinksKey];
-    if (value != nil) {
-        config.trackDeepLinks = [RCTConvert BOOL:value];
-    }
-
-#ifdef SEGTaplyticsIntegrationFactoryImported
-    [config use:[SEGTaplyticsIntegrationFactory instance]];
-#endif
-
-#ifdef SEGAdjustIntegrationFactoryImported
-    [config use:[SEGAdjustIntegrationFactory instance]];
-#endif
-
-#ifdef SEGGoogleAnalyticsIntegrationFactoryImported
-    [config use:[SEGGoogleAnalyticsIntegrationFactory instance]];
-#endif
-
-#ifdef SEGComScoreIntegrationFactoryImported
-    [config use:[SEGComScoreIntegrationFactory instance]];
-#endif
-
-#ifdef SEGAmplitudeIntegrationFactoryImported
-    [config use:[SEGAmplitudeIntegrationFactory instance]];
-#endif
-
-#ifdef SEGFacebookAppEventsIntegrationFactoryImported
-    [config use:[SEGFacebookAppEventsIntegrationFactory instance]];
-#endif
-
-#ifdef SEGMixpanelIntegrationFactoryImported
-    [config use:[SEGMixpanelIntegrationFactory instance]];
-#endif
-
-#ifdef SEGLocalyticsIntegrationFactoryImported
-    [config use:[SEGLocalyticsIntegrationFactory instance]];
-#endif
-
-#ifdef SEGFlurryIntegrationFactoryImported
-    [config use:[SEGFlurryIntegrationFactory instance]];
-#endif
-
-#ifdef SEGQuantcastIntegrationFactoryImported
-    [config use:[SEGQuantcastIntegrationFactory instance]];
-#endif
-
-#ifdef SEGCrittercismIntegrationFactoryImported
-    [config use:[SEGCrittercismIntegrationFactory instance]];
-#endif
-
-#ifdef SEGFirebaseIntegrationFactoryImported
-    [config use:[SEGFirebaseIntegrationFactory instance]];
-#endif
-
-#ifdef SEGAppsFlyerIntegrationFactoryImported
-    [config use:[SEGAppsFlyerIntegrationFactory instance]];
-#endif
-
-#ifdef BNCBranchIntegrationFactoryImported
-    [config use:[BNCBranchIntegrationFactory instance]];
-#endif
-
-#ifdef SEGAppboyIntegrationFactoryImported
-    [config use:[SEGAppboyIntegrationFactory instance]];
-#endif
+    [RNASegmentIO setupInnerWithKey:key options:options];
     
-#ifdef SEGIntercomIntegrationFactoryImported
-    [config use:[SEGIntercomIntegrationFactory instance]];
-#endif
-
-    [SEGAnalytics setupWithConfiguration:config];
-
-    value = options[kSEGDebugKey];
-    if (value != nil) {
-        [SEGAnalytics debug:[RCTConvert BOOL:value]];
-    }
+    id value = options[kSEGEnableAdvertisingTrackingKey];
     //Fix due to late init of native module
     value = options[kSEGTrackApplicationLifecycleEventsKey];
     if (value != nil && [RCTConvert BOOL:value]) {
@@ -167,7 +62,7 @@ RCT_EXPORT_METHOD(setup:(NSString *)key
             [[SEGAnalytics sharedAnalytics] performSelector:selector withObject:self.bridge.launchOptions];
         }
     }
-
+    
     resolve(@(YES));
 }
 
@@ -220,18 +115,135 @@ RCT_EXPORT_METHOD(disable)
     return YES;
 }
 
++ (void)setupInnerWithKey:(NSString *)key options:(NSDictionary *)options {
+    SEGAnalyticsConfiguration *config = [SEGAnalyticsConfiguration configurationWithWriteKey:key];
+    
+    id value = options[kSEGEnableAdvertisingTrackingKey];
+    if (value != nil) {
+        config.enableAdvertisingTracking = [RCTConvert BOOL:value];
+    }
+    
+    value = options[kSEGFlushAtKey];
+    if (value != nil) {
+        config.flushAt = [RCTConvert NSUInteger:value];
+    }
+    
+    value = options[kSEGRecordScreenViewsKey];
+    if (value != nil) {
+        config.recordScreenViews = [RCTConvert BOOL:value];
+    }
+    
+    value = options[kSEGShouldUseBluetoothKey];
+    if (value != nil) {
+        config.shouldUseBluetooth = [RCTConvert BOOL:value];
+    }
+    
+    value = options[kSEGShouldUseLocationServicesKey];
+    if (value != nil) {
+        config.shouldUseLocationServices = [RCTConvert BOOL:value];
+    }
+    
+    value = options[kSEGTrackApplicationLifecycleEventsKey];
+    if (value != nil) {
+        config.trackApplicationLifecycleEvents = [RCTConvert BOOL:value];
+    }
+    
+    value = options[kSEGTrackAttributionDataKey];
+    if (value != nil) {
+        config.trackAttributionData = [RCTConvert BOOL:value];
+    }
+    
+    value = options[kSEGTrackDeepLinksKey];
+    if (value != nil) {
+        config.trackDeepLinks = [RCTConvert BOOL:value];
+    }
+    
+#ifdef SEGTaplyticsIntegrationFactoryImported
+    [config use:[SEGTaplyticsIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGAdjustIntegrationFactoryImported
+    [config use:[SEGAdjustIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGGoogleAnalyticsIntegrationFactoryImported
+    [config use:[SEGGoogleAnalyticsIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGComScoreIntegrationFactoryImported
+    [config use:[SEGComScoreIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGAmplitudeIntegrationFactoryImported
+    [config use:[SEGAmplitudeIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGFacebookAppEventsIntegrationFactoryImported
+    [config use:[SEGFacebookAppEventsIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGMixpanelIntegrationFactoryImported
+    [config use:[SEGMixpanelIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGLocalyticsIntegrationFactoryImported
+    [config use:[SEGLocalyticsIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGFlurryIntegrationFactoryImported
+    [config use:[SEGFlurryIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGQuantcastIntegrationFactoryImported
+    [config use:[SEGQuantcastIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGCrittercismIntegrationFactoryImported
+    [config use:[SEGCrittercismIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGFirebaseIntegrationFactoryImported
+    [config use:[SEGFirebaseIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGAppsFlyerIntegrationFactoryImported
+    [config use:[SEGAppsFlyerIntegrationFactory instance]];
+#endif
+    
+#ifdef BNCBranchIntegrationFactoryImported
+    [config use:[BNCBranchIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGAppboyIntegrationFactoryImported
+    [config use:[SEGAppboyIntegrationFactory instance]];
+#endif
+    
+#ifdef SEGIntercomIntegrationFactoryImported
+    [config use:[SEGIntercomIntegrationFactory instance]];
+#endif
+    
+    [SEGAnalytics setupWithConfiguration:config];
+    
+    value = options[kSEGDebugKey];
+    if (value != nil) {
+        [SEGAnalytics debug:[RCTConvert BOOL:value]];
+    }
+    
+}
+
 - (NSDictionary<NSString *, id> *)constantsToExport {
     return @{
-        kSEGEnableAdvertisingTrackingKey: kSEGEnableAdvertisingTrackingKey,
-        kSEGFlushAtKey: kSEGFlushAtKey,
-        kSEGRecordScreenViewsKey: kSEGRecordScreenViewsKey,
-        kSEGShouldUseBluetoothKey: kSEGShouldUseBluetoothKey,
-        kSEGShouldUseLocationServicesKey: kSEGShouldUseLocationServicesKey,
-        kSEGTrackApplicationLifecycleEventsKey: kSEGTrackApplicationLifecycleEventsKey,
-        kSEGTrackAttributionDataKey: kSEGTrackAttributionDataKey,
-        kSEGTrackDeepLinksKey: kSEGTrackDeepLinksKey,
-        kSEGDebugKey: kSEGDebugKey,
-    };
+             kSEGEnableAdvertisingTrackingKey: kSEGEnableAdvertisingTrackingKey,
+             kSEGFlushAtKey: kSEGFlushAtKey,
+             kSEGRecordScreenViewsKey: kSEGRecordScreenViewsKey,
+             kSEGShouldUseBluetoothKey: kSEGShouldUseBluetoothKey,
+             kSEGShouldUseLocationServicesKey: kSEGShouldUseLocationServicesKey,
+             kSEGTrackApplicationLifecycleEventsKey: kSEGTrackApplicationLifecycleEventsKey,
+             kSEGTrackAttributionDataKey: kSEGTrackAttributionDataKey,
+             kSEGTrackDeepLinksKey: kSEGTrackDeepLinksKey,
+             kSEGDebugKey: kSEGDebugKey,
+             };
 }
 
 @end
+
